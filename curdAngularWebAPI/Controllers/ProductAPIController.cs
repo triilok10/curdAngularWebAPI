@@ -260,5 +260,118 @@ namespace curdAngularWebAPI.Controllers
             }
         }
         #endregion
+
+
+        #region "Insert Record PostAPI"
+
+        [HttpPost("PostAPI")]
+        public async Task<PostAPIResponse> PostAPI(PostAPI pPostAPI)
+        {
+            PostAPIResponse obj = new PostAPIResponse();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_ConnectionString))
+                {
+                    await con.OpenAsync();
+
+                    SqlCommand cmd = new SqlCommand("usp_InsertPostAPI", con)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+
+                    cmd.Parameters.AddWithValue("@Mode", "AddPostAPI");
+                    cmd.Parameters.AddWithValue("@firstName", pPostAPI.firstName);
+                    cmd.Parameters.AddWithValue("@lastName", pPostAPI.lastName);
+                    cmd.Parameters.AddWithValue("@address", pPostAPI.address);
+                    cmd.Parameters.AddWithValue("@mobileNumber", pPostAPI.mobileNumber);
+                    cmd.Parameters.AddWithValue("@gender", pPostAPI.gender);
+
+
+                    using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await rdr.ReadAsync())
+                        {
+                            obj.postApiID = Convert.ToInt32(rdr["postApiID"]);
+                            obj.status = Convert.ToBoolean(rdr["status"]);
+                            obj.message = Convert.ToString(rdr["message"]);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it appropriately
+                obj.status = false;
+                obj.message = ex.Message;
+                obj.postApiID = 0;
+            }
+            return obj;
+        }
+
+        #endregion
+
+
+        #region "Insert Record PostAPI"
+
+        [HttpGet("GetAPI")]
+        public async Task<MasterResponse> GetAPI()
+        {
+            MasterResponse obj = new MasterResponse();
+            List<GetApiResponse> lstPost = new List<GetApiResponse>();
+            try
+            {
+                using (SqlConnection con = new SqlConnection(_ConnectionString))
+                {
+                    await con.OpenAsync();
+
+
+                    SqlCommand cmd = new SqlCommand("usp_InsertPostAPI", con)
+                    {
+                        CommandType = CommandType.StoredProcedure
+                    };
+
+                    cmd.Parameters.AddWithValue("@Mode", "GETLIST");
+
+                    using (SqlDataReader rdr = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await rdr.ReadAsync())
+                        {
+                            lstPost.Add(new GetApiResponse
+                            {
+                                postApiID = Convert.ToInt32(rdr["postApiID"]),
+                                firstName = Convert.ToString(rdr["firstName"]),
+                                lastName = Convert.ToString(rdr["lastName"]),
+                                mobileNumber = Convert.ToInt32(rdr["mobileNumber"]),
+                                address = Convert.ToString(rdr["address"]),
+                                gender = Convert.ToString(rdr["gender"])
+                            });
+                        }
+                    }
+
+
+                    obj.status = true;
+                    obj.message = "Success";
+                    obj.totalRecord = lstPost.Count;
+                    if (lstPost.Count > 0)
+                    {
+                        obj.ProductItems = lstPost;
+                    }
+                    else
+                    {
+                        obj.ProductItems = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                obj.status = false;
+                obj.message = ex.Message;
+            }
+            return obj;
+        }
+
+
+        #endregion
     }
 }

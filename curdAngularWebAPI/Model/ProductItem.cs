@@ -19,4 +19,40 @@
         public List<ProductItem> ProductItems { get; set; } = new List<ProductItem>();
 
     }
+
+    public class PostAPI
+    {
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public int mobileNumber { get; set; }
+        public string address { get; set; }
+        public string gender { get; set; }
+    }
+
+    public class PostAPIResponse
+    {
+        public int postApiID { get; set; }
+        public string message { get; set; }
+        public bool status { get; set; }
+    }
+
+    public class GetApiResponse
+    {
+        public int postApiID { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public int mobileNumber { get; set; }
+        public string address { get; set; }
+        public string gender { get; set; }
+    }
+
+    public class MasterResponse
+    {
+        public string message { get; set; }
+        public bool status { get; set; }
+
+        public int totalRecord { get; set; }
+
+        public List<GetApiResponse>? ProductItems { get; set; }
+    }
 }
